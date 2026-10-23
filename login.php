@@ -1,14 +1,23 @@
 <?php
-$mensagem = ""
+session_start();
+$mensagem = "";
 
 if($_SERVER["REQUEST_METHOD"] === "POST"){
     $usuario = $_POST["usuario"];
     $senha = $_POST["senha"];
 
-    if($usuario === "admin" && $senha ==="1234") {
-        $mensagem = "Login efetuado com sucesso!";
+    if (file_exists("usuarios.json")) {
+        $usuario = json_decode(file_get_content("usuarios.json"), true);
     }else{
-        $mensagem = "Usuario ou senha incorretos"
+        $usuario = [];
+    }
+
+    if (isset($usuarios[$usuario]) && password_verify($senha, $usuarios [$usuario])){
+        $usuarios["usuario"] = $usuario;
+        header(Location: painel.php);
+        exit;
+    }else {
+        $mensagem = "Usuario ou senha incorretos";
     }
 }
 ?>
@@ -23,10 +32,10 @@ if($_SERVER["REQUEST_METHOD"] === "POST"){
     <h1>Entrar</h1>
     <p><?= $mensagem ?></p>
     <form method="post">
-        <p><input type="text" name = "usuario" placeholder="Usuario"></p>
-        <p><input type="password" name="senha"></p>
+        <p><input type="text" name="usuario" placeholder="Usuario"></p>
+        <p><input type="password" name="senha" placeholder="Senha"></p>
         <button>Entrar</button>
     </form>
-    
+    <p><a href="cadastro.php">Criar conta</a></p>
 </body>
 </html>
